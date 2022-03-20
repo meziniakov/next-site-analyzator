@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { Layout, Link, Menu, Breadcrumb } from "antd";
 import SidebarMenu from "./sidebar.menu";
+import A from "../A";
 
 const { Header, Content, Footer } = Layout;
 const { SubMenu } = Menu;
@@ -28,12 +29,9 @@ export default function LayoutAdmin({ children, title }) {
           <Content style={{ margin: "0 16px" }}>
             <Breadcrumb style={{ margin: "16px 0" }}>
               <Breadcrumb.Item>
-                {/* <Link href="/project">Project</Link> */}
+                <A href={"/project"} text={"Проекты"}></A>
               </Breadcrumb.Item>
-              <Breadcrumb.Item>
-                <a>Bill</a>
-              </Breadcrumb.Item>
-              <Breadcrumb.Item>Bill a cat</Breadcrumb.Item>
+              <Breadcrumb.Item>{title}</Breadcrumb.Item>
             </Breadcrumb>
             <main>{children}</main>
           </Content>

@@ -8,17 +8,22 @@ import {
   Input,
   Button,
   Divider,
+  Space,
+  message,
 } from "antd";
-import Layout from "../../../components/admin/layout.admin";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import Layout from "../../components/admin/layout.admin";
 import axios from "axios";
-import A from "../../../components/A";
+import A from "../../components/A";
+import CollectionCreateForm from "../../components/admin/buttonModal";
+
 const { TextArea } = Input;
 
 const columns = [
   {
     title: "Тематика",
     dataIndex: "title",
-    render: (text, record) => <A href={record._id} text={text} />,
+    render: (text, record) => <A href={"/project/" + record._id} text={text} />,
   },
   {
     title: "Пользователь",
@@ -38,6 +43,16 @@ const columns = [
     title: "Доходность",
     dataIndex: "profitPerVisitor",
   },
+  {
+    title: "Действия",
+    key: "action",
+    render: (text, record) => (
+      <Space size="middle">
+        <A href={"/project/edit/" + record._id} text={<EditOutlined />} />
+        <A href={"/project/edit/" + record._id} text={<DeleteOutlined />} />
+      </Space>
+    ),
+  },
 ];
 
 const rowSelection = {
@@ -55,7 +70,7 @@ const rowSelection = {
   }),
 };
 
-export default function Demo() {
+export default function Project() {
   const [selectionType, setSelectionType] = useState("checkbox");
   const [projects, setProjects] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -70,7 +85,7 @@ export default function Demo() {
     console.log(projectData);
 
     axios
-      .post("http://localhost:5000/api/project", projectData)
+      .post(`${process.env.NEXT_PUBLIC_API_SERVER}/api/project/`, projectData)
       .then((res) =>
         res.data.status === "error"
           ? message.error(res.data.message)
@@ -79,10 +94,9 @@ export default function Demo() {
       .catch((e) => alert(e.message, "error"));
     setVisible(false);
   };
-
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/project/")
+      .get(`${process.env.NEXT_PUBLIC_API_SERVER}/api/project/`)
       .then((response) => {
         setProjects(response.data);
         // console.log("Data", response);
@@ -124,82 +138,3 @@ export default function Demo() {
     </Layout>
   );
 }
-
-const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
-  const [form] = Form.useForm();
-
-  return (
-    <Modal
-      animation={false}
-      visible={visible}
-      title="Добавить проект"
-      okText="Добавить"
-      cancelText="Отмена"
-      onCancel={onCancel}
-      onOk={() => {
-        form
-          .validateFields()
-          .then((values) => {
-            // console.log("Responce: ", values.keywords.split("\n"));
-            onCreate(values);
-            form.resetFields();
-          })
-          .catch((info) => {
-            console.log("Validate Failed:", info);
-          });
-      }}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        name="form_in_modal"
-        initialValues={{
-          count: 1,
-          profitPerVisitor: 0.1,
-        }}
-      >
-        <Form.Item
-          name="title"
-          label="Тематика сайтов"
-          rules={[
-            {
-              required: true,
-              message: "Пожалуйста, введите тематику собираемых сайтов!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="keywords"
-          label="Ключевые слова"
-          rules={[
-            {
-              required: true,
-              message: "Пожалуйста, введите ключевые слова!",
-            },
-          ]}
-        >
-          <TextArea
-            placeholder="Ключевые слова с новой строки"
-            autoSize={{ minRows: 2, maxRows: 6 }}
-          />
-        </Form.Item>
-        <Form.Item
-          name="count"
-          label="Страниц выдачи Google"
-          className="collection-create-form_last-form-item"
-        >
-          <InputNumber min={1} max={10} />
-        </Form.Item>
-        <Form.Item
-          name="profitPerVisitor"
-          label="Доход на посетителя"
-          className="collection-create-form_last-form-item"
-        >
-          <InputNumber min={0} max={1} step="0.1" />
-        </Form.Item>
-      </Form>
-    </Modal>
-  );
-};

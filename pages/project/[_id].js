@@ -1,5 +1,5 @@
-import A from "../../../components/A";
-import Layout from "../../../components/admin/layout.admin";
+import A from "../../components/A";
+import Layout from "../../components/admin/layout.admin";
 import { useRouter } from "next/router";
 import { Tag, Tabs, Table, Tooltip, Button, Radio, Divider } from "antd";
 import { useCallback, useEffect, useState } from "react";
@@ -18,20 +18,6 @@ const columns = [
       </>
     ),
   },
-  // {
-  //   title: "Title",
-  //   dataIndex: "title",
-  //   render: (keywords) => (
-  //     <>
-  //       {keywords.map((keyword) => (
-  //         <Tag color="blue" key={keyword}>
-  //           {keyword}
-  //           <br />
-  //         </Tag>
-  //       ))}
-  //     </>
-  //   ),
-  // },
   {
     title: `TR`,
     dataIndex: "traffic",
@@ -72,7 +58,6 @@ const rowSelection = {
   },
   getCheckboxProps: (record) => ({
     disabled: record.name === "Disabled User",
-    // Column configuration not to be checked
     name: record.name,
   }),
 };
@@ -86,7 +71,7 @@ export default function ProjectId({ props }) {
 
   const getDomains = useCallback(() => {
     axios
-      .get("http://localhost:5000/api/project/" + _id)
+      .get(`${process.env.NEXT_PUBLIC_API_SERVER}/api/project/${_id}`)
       .then((res) => {
         console.log("Res", res);
         // alert
@@ -106,7 +91,7 @@ export default function ProjectId({ props }) {
   }
 
   return (
-    <Layout title={`Project ${router.query._id}`}>
+    <Layout title={`Project ${_id}`}>
       <Tabs onChange={callback} type="card">
         <TabPane tab="Сбор доменов" key="1">
           <div>

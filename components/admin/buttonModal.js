@@ -1,55 +1,7 @@
-import axios from "axios";
-import React, { useState } from "react";
-import { Button, Modal, Form, Input, InputNumber, message } from "antd";
-import Layout from "../../../components/admin/layout.admin";
+import { Modal, Form, Input, InputNumber } from "antd";
 const { TextArea } = Input;
 
-export default function CollectionsPage() {
-  const [visible, setVisible] = useState(false);
-
-  const onCreate = (values) => {
-    const projectData = {
-      title: values.title,
-      keywords: values.keywords.split("\n"),
-      count: values.count,
-      profitPerVisitor: values.profitPerVisitor,
-    };
-    console.log(projectData);
-
-    axios
-      .post("http://localhost:5000/api/project", projectData)
-      .then((res) =>
-        res.data.status === "error"
-          ? message.error(res.data.message)
-          : message.success(res.data.message)
-      )
-      .catch((e) => alert(e.message, "error"));
-    setVisible(false);
-  };
-  return (
-    <Layout title="Проекты">
-      <div>
-        <Button
-          type="primary"
-          onClick={() => {
-            setVisible(true);
-          }}
-        >
-          Добавить проект
-        </Button>
-        <CollectionCreateForm
-          visible={visible}
-          onCreate={onCreate}
-          onCancel={() => {
-            setVisible(false);
-          }}
-        />
-      </div>
-    </Layout>
-  );
-}
-
-const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
+export default function CollectionCreateForm({ visible, onCreate, onCancel }) {
   const [form] = Form.useForm();
 
   return (
@@ -126,4 +78,4 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
       </Form>
     </Modal>
   );
-};
+}
