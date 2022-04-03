@@ -1,20 +1,43 @@
-import A from "../../components/A";
-import Layout from "../../components/admin/layout.admin";
-import { useRouter } from "next/router";
-import { Tag, Tabs, Table, Tooltip, Button, Radio, Divider } from "antd";
-import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import A from "../../components/A";
+import { useRouter } from "next/router";
+import Layout from "../../components/admin/layout.admin";
+import { useCallback, useEffect, useState } from "react";
+import { Tabs, Table, Tooltip, Button, message, Space } from "antd";
+import { MailFilled, MailOutlined, MailTwoTone } from "@ant-design/icons";
+
 const { TabPane } = Tabs;
 
 const columns = [
   {
     title: "Домен",
     dataIndex: "domain",
+    width: 300,
+    fixed: "left",
+    ellipsis: {
+      showTitle: false,
+    },
     render: (text, record) => (
-      <>
+      <Tooltip placement="topLeft" title={record.title}>
         <A href={record._id} text={text} />
         <br />
         <span>{record.title}</span>
+      </Tooltip>
+    ),
+  },
+  {
+    title: "Email",
+    dataIndex: "emails",
+    width: 80,
+    render: (text, record) => (
+      <>
+        {record.emails.length !== 0 ? (
+          <Tooltip title={text}>
+            <MailTwoTone twoToneColor="#1890ff" />
+          </Tooltip>
+        ) : (
+          ""
+        )}
       </>
     ),
   },
@@ -48,69 +71,121 @@ const columns = [
   },
 ];
 
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows
-    );
-  },
-  getCheckboxProps: (record) => ({
-    disabled: record.name === "Disabled User",
-    name: record.name,
-  }),
-};
-
 export default function ProjectId({ props }) {
   const router = useRouter();
   const { _id } = router.query;
   const [domains, setDomains] = useState([]);
   const [selectedDomains, setSelectedDomains] = useState([]);
-  const [selectionType, setSelectionType] = useState("checkbox");
 
   const getDomains = useCallback(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_API_SERVER}/api/project/${_id}`)
       .then((res) => {
-        console.log("Res", res);
-        // alert
-        //   ? alert(res.data, 'error')
-        //   : alert(res.data.countUpdate, 'success');
         setDomains(res.data);
       })
       .catch((e) => console.log(e));
   }, [_id]);
 
+  async function onGetEmails(req, res) {
+    selectedDomains.forEach(async (el) => {
+      await axios
+        .post(
+          `${process.env.NEXT_PUBLIC_API_SERVER}/api/parser/emails`,
+          { domain: el.domain }
+          // {
+          //   headers: {
+          //     "Access-Control-Allow-Origin": "*",
+          //     "Access-Control-Allow-Credentials": "true",
+          //     "Access-Control-Max-Age": "1800",
+          //     "Access-Control-Allow-Headers": "content-type",
+          //     "Access-Control-Allow-Methods":
+          //       "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+          //   },
+          // }
+          // AXIOS_OPTIONS
+        )
+        .then((res) => {
+          console.log(res.data.emails);
+          res.status === "200"
+            ? message.error("Ошибка")
+            : message.success("Успешно");
+          getDomains();
+        })
+        .catch((e) => alert(e.message, "error"));
+    });
+    // const domainData = {
+    //   domain: selectedDomains[0].domain,
+    // };
+
+    // axios
+    //   .post(
+    //     `${process.env.NEXT_PUBLIC_API_SERVER}/api/parser/emails`,
+    //     domainData
+    //     // AXIOS_OPTIONS
+    //   )
+    //   .then((res) => {
+    //     console.log(res.data.emails);
+    //     res.data.status === "200"
+    //       ? message.error(res.data)
+    //       : message.success(res.error);
+    //     getDomains();
+    //   })
+    //   .catch((e) => alert(e.message, "error"));
+    // setVisible(false);
+  }
+
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setSelectedDomains(selectedRows);
+    },
+    getCheckboxProps: (record) => ({
+      disabled: record.name === "Disabled User",
+      name: record.name,
+    }),
+  };
+
   useEffect(() => {
     getDomains();
   }, [getDomains, _id]);
 
-  function callback(key) {
-    console.log(key);
-  }
-
   return (
     <Layout title={`Project ${_id}`}>
-      <Tabs onChange={callback} type="card">
+      <Tabs type="card">
         <TabPane tab="Сбор доменов" key="1">
           <div>
-            <Button
-              type="primary"
-              onClick={() => {
-                setVisible(true);
-              }}
-            >
-              Добавить домен
-            </Button>
-            <Divider />
+            {/* <Divider /> */}
+            <div style={{ marginBottom: 16 }}>
+              <Space>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    setVisible(true);
+                  }}
+                >
+                  Добавить домен
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={onGetEmails}
+                  disabled={!selectedDomains.length}
+                  // loading={loading}
+                >
+                  Собрать почту
+                </Button>
+              </Space>
+              <span style={{ marginLeft: 8 }}>
+                {/* {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""} */}
+              </span>
+            </div>
             <Table
               pagination={false}
               rowKey={"_id"}
-              rowSelection={{
-                type: selectionType,
-                ...rowSelection,
-              }}
+              scroll={{ y: "70vh", x: 1500 }}
+              rowSelection={rowSelection}
+              // rowSelection={{
+              //   type: selectionType,
+              //   ...rowSelection,
+              // }}
               columns={columns}
               dataSource={domains}
             />
@@ -126,3 +201,4 @@ export default function ProjectId({ props }) {
     </Layout>
   );
 }
+ProjectId.auth = true;

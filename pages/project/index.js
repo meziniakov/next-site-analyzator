@@ -16,8 +16,7 @@ import Layout from "../../components/admin/layout.admin";
 import axios from "axios";
 import A from "../../components/A";
 import CollectionCreateForm from "../../components/admin/buttonModal";
-
-const { TextArea } = Input;
+import { useSession } from "next-auth/react";
 
 const columns = [
   {
@@ -71,6 +70,7 @@ const rowSelection = {
 };
 
 export default function Project() {
+  const { data: session } = useSession();
   const [selectionType, setSelectionType] = useState("checkbox");
   const [projects, setProjects] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -82,8 +82,6 @@ export default function Project() {
       count: values.count,
       profitPerVisitor: values.profitPerVisitor,
     };
-    console.log(projectData);
-
     axios
       .post(`${process.env.NEXT_PUBLIC_API_SERVER}/api/project/`, projectData)
       .then((res) =>
@@ -94,6 +92,7 @@ export default function Project() {
       .catch((e) => alert(e.message, "error"));
     setVisible(false);
   };
+
   useEffect(() => {
     axios
       .get(`${process.env.NEXT_PUBLIC_API_SERVER}/api/project/`)
@@ -138,3 +137,5 @@ export default function Project() {
     </Layout>
   );
 }
+
+Project.auth = true;
