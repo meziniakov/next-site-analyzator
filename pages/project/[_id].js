@@ -31,7 +31,7 @@ const columns = [
     width: 80,
     render: (text, record) => (
       <>
-        {record.emails.length !== 0 ? (
+        {record?.emails?.length !== 0 ? (
           <Tooltip title={text}>
             <MailTwoTone twoToneColor="#1890ff" />
           </Tooltip>
@@ -167,7 +167,7 @@ export default function ProjectId({ props }) {
                 <Button
                   type="primary"
                   onClick={onGetEmails}
-                  disabled={!selectedDomains.length}
+                  disabled={!selectedDomains?.length}
                   // loading={loading}
                 >
                   Собрать почту
