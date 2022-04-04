@@ -31,7 +31,7 @@ const columns = [
     width: 80,
     render: (text, record) => (
       <>
-        {record?.emails?.length !== 0 ? (
+        {record.emails?.length !== 0 ? (
           <Tooltip title={text}>
             <MailTwoTone twoToneColor="#1890ff" />
           </Tooltip>
