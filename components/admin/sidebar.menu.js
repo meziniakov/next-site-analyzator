@@ -11,7 +11,13 @@ export default function SidebarMenu() {
   }
 
   return (
-    <Sider collapsible collapsed={!collapsed} onCollapse={onCollapse}>
+    <Sider
+      breakpoint="xl"
+      collapsedWidth="0"
+      collapsible
+      collapsed={!collapsed}
+      onCollapse={onCollapse}
+    >
       <div
         className="logo"
         style={{

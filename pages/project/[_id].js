@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Layout from "../../components/admin/layout.admin";
 import { useCallback, useEffect, useState } from "react";
 import { Tabs, Table, Tooltip, Button, message, Space } from "antd";
-import { MailFilled, MailOutlined, MailTwoTone } from "@ant-design/icons";
+import { MailTwoTone } from "@ant-design/icons";
 
 const { TabPane } = Tabs;
 
@@ -113,25 +113,6 @@ export default function ProjectId({ props }) {
         })
         .catch((e) => alert(e.message, "error"));
     });
-    // const domainData = {
-    //   domain: selectedDomains[0].domain,
-    // };
-
-    // axios
-    //   .post(
-    //     `${process.env.NEXT_PUBLIC_API_SERVER}/api/parser/emails`,
-    //     domainData
-    //     // AXIOS_OPTIONS
-    //   )
-    //   .then((res) => {
-    //     console.log(res.data.emails);
-    //     res.data.status === "200"
-    //       ? message.error(res.data)
-    //       : message.success(res.error);
-    //     getDomains();
-    //   })
-    //   .catch((e) => alert(e.message, "error"));
-    // setVisible(false);
   }
 
   const rowSelection = {
