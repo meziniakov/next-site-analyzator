@@ -38,12 +38,12 @@ export default function LayoutAdmin({ children, title }) {
           >
             <Row>
               <Col span={22}>
-                <Menu theme="white" mode="horizontal">
+                {/* <Menu theme="white" mode="horizontal">
                   {new Array(2).fill(null).map((_, index) => {
                     const key = index + 1;
                     return <Menu.Item key={key}>{`Страница ${key}`}</Menu.Item>;
                   })}
-                </Menu>
+                </Menu> */}
               </Col>
               <Col span={2}>
                 <Dropdown overlay={menu}>
